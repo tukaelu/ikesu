@@ -1,0 +1,19 @@
+---
+checker:
+  - name: "hoge"
+    service: "hoge_service"
+    interrupted_interval: 24h
+    providers:
+      - ec2
+      - rds
+    inspection_metrics:
+      ec2:
+        - "custom.foo.bar"
+  - name: "foo"
+    service: "foo_service"
+    roles:
+      - "role1"
+      - "role2"
+    interrupted_interval: 12h
+    providers:
+      - lambda

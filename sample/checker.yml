@@ -1,0 +1,12 @@
+---
+checker:
+  - name: check blog frontweb
+    service: blog
+    roles:
+      - web
+    interrupted_interval: 24h
+    providers:
+      - agent-ec2
+    inspection_metrics:
+      agent-ec2:
+        - "custom.foo.bar"
