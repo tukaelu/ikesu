@@ -24,6 +24,16 @@ Mackerelで管理しているホストのメトリックの一定時間以上の
 
 ## インストール方法
 
+### Homebrewでインストール
+
+```
+brew install tukaelu/tap/ikesu
+```
+
+### バイナリを使用する
+
+[リリースページ](https://github.com/tukaelu/ikesu/releases)から使用する環境にあったZipアーカイブをダウンロードしてご使用ください。
+
 ## 使用方法
 
 ```
