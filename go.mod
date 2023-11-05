@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.47.3
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
-	github.com/go-logr/zapr v1.2.4
+	github.com/go-logr/zapr v1.3.0
 	github.com/mackerelio/mackerel-client-go v0.26.0
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
