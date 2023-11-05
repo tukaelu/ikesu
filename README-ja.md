@@ -50,6 +50,9 @@ OPTIONS:
 # APIキーが環境変数 MACKEREL_APIKEY もしくは IKESU_MACKEREL_APIKEY に設定されている場合
 ikesu checker --conf checker.yaml
 
+# 設定をS3バケットから読み込む場合（regionHintを指定しない場合は`ap-northeast-1`として扱います）
+ikesu checker --conf s3://your_s3_bucket/checker.yaml?regionHint=ap-northeast-1
+
 # APIキーをオプションで指定する場合
 ikesu -apikey <your api key> checker --conf checker.yaml
 ```
