@@ -25,6 +25,9 @@ func NewDefaultLogger(logLevel string, dryrun bool) (*Logger, error) {
 		conf := zap.NewProductionConfig()
 		conf.EncoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder
 		conf.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+		// Cease the sampling of log output.
+		// see. https://github.com/uber-go/zap/blob/master/FAQ.md#why-are-some-of-my-logs-missing
+		conf.Sampling = nil
 
 		var lv zapcore.Level
 		if err := lv.UnmarshalText([]byte(logLevel)); err != nil {
