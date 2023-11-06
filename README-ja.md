@@ -38,13 +38,13 @@ brew install tukaelu/tap/ikesu
 
 ```
 NAME:
-   ikesu checker - Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.
+   ikesu check - Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.
 
 USAGE:
-   ikesu checker -config <config file> [-dry-run]
+   ikesu check -config <config file> [-dry-run]
 
 OPTIONS:
-   --config value, -c value  Specify the path to the configuration file. [$IKESU_CHECKER_CONFIG]
+   --config value, -c value  Specify the path to the configuration file. [$IKESU_CHECK_CONFIG]
    --show-providers          List the inspection metric names corresponding to the provider for each integration. (default: false)
    --dry-run                 Only a simplified display of the check results is performed, and no alerts are issued. (default: false)
    --help, -h                show help
@@ -58,13 +58,13 @@ OPTIONS:
 
 ```
 # APIキーが環境変数 MACKEREL_APIKEY もしくは IKESU_MACKEREL_APIKEY に設定されている場合
-ikesu checker --conf checker.yaml
+ikesu check --conf check.yaml
 
 # 設定をS3バケットから読み込む場合（regionHintを指定しない場合は`ap-northeast-1`として扱います）
-ikesu checker --conf s3://your_s3_bucket/checker.yaml?regionHint=ap-northeast-1
+ikesu check --conf s3://your_s3_bucket/check.yaml?regionHint=ap-northeast-1
 
 # APIキーをオプションで指定する場合
-ikesu -apikey <your api key> checker --conf checker.yaml
+ikesu -apikey <your api key> check --conf check.yaml
 ```
 
 ## 設定方法
@@ -73,7 +73,7 @@ ikesu -apikey <your api key> checker --conf checker.yaml
 
 ```
 ---
-checker:
+check:
   - name: front-web
     service: blog
     roles:
@@ -97,7 +97,7 @@ checker:
 
 | 項目                 | 必須/固定 | 説明                                                        | 初期値 |
 | -------------------- | --------- | ----------------------------------------------------------- | ------ |
-| checker              | 固定      | -                                                           | -      |
+| check                | 固定      | -                                                           | -      |
 | name                 | 必須      | 監視ルール名                                                | -      |
 | service              | 必須      | 監視対象とするサービス名                                    | -      |
 | roles                | 任意      | 監視対象とするロール名（複数指定可）                        | -      |

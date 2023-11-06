@@ -11,10 +11,10 @@ import (
 )
 
 func TestConfigLoad(t *testing.T) {
-	conf, _ := NewCheckerConfig(context.TODO(), "testdata/checker.yml")
+	conf, _ := NewCheckConfig(context.TODO(), "testdata/check.yml")
 
-	cases := &CheckerConfig{
-		Rules: []MetricCheckerRule{
+	cases := &CheckConfig{
+		Rules: []MetricCheckRule{
 			{
 				Name:                "hoge",
 				Service:             "hoge_service",
@@ -40,14 +40,14 @@ func TestConfigLoad(t *testing.T) {
 }
 
 func TestConfigFileLoading(t *testing.T) {
-	var cc *CheckerConfig
+	var cc *CheckConfig
 	var err error
-	_, err = NewCheckerConfig(context.TODO(), "testdata")
+	_, err = NewCheckConfig(context.TODO(), "testdata")
 	assert.EqualError(t, ErrNoSuchConfigFile, err.Error())
-	_, err = NewCheckerConfig(context.TODO(), "testdata/empty.yml")
+	_, err = NewCheckConfig(context.TODO(), "testdata/empty.yml")
 	assert.EqualError(t, ErrEmptyConfigFile, err.Error())
-	cc, err = NewCheckerConfig(context.TODO(), "testdata/checker_none.yml")
-	assert.EqualError(t, ErrNoCheckerRules, cc.Validate().Error())
+	cc, err = NewCheckConfig(context.TODO(), "testdata/check_none.yml")
+	assert.EqualError(t, ErrNoCheckRules, cc.Validate().Error())
 	assert.Equal(t, nil, err)
 }
 

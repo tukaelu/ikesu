@@ -1,5 +1,5 @@
 ---
-checker:
+check:
   - name: "hoge"
     service: "hoge_service"
     interrupted_interval: 24h
