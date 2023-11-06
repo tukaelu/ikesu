@@ -1,5 +1,5 @@
 ---
-checker:
+check:
   - name: check blog frontweb
     service: blog
     roles:

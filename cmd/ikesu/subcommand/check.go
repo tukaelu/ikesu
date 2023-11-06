@@ -14,8 +14,8 @@ import (
 	"github.com/tukaelu/ikesu/internal/logger"
 )
 
-type Checker struct {
-	Config *config.CheckerConfig
+type Check struct {
+	Config *config.CheckConfig
 	Client *mackerel.Client
 	DryRun bool
 
@@ -24,12 +24,12 @@ type Checker struct {
 
 // FIXME: If 'service' is ever added to CheckSource.Type, it may be necessary to consider separating the logic.
 // see. https://github.com/mackerelio/mackerel-client-go/blob/264b7b7a402a9638b8137ec0a8ab9b8e950eef5a/checks.go#L16
-func (c *Checker) Run(ctx context.Context) error {
+func (c *Check) Run(ctx context.Context) error {
 	var reports []*mackerel.CheckReport
 
 	checkedAt := time.Now().Unix()
 	for _, rule := range c.Config.Rules {
-		c.Log.Info("CheckerRule", "name", rule.Name)
+		c.Log.Info("CheckRule", "name", rule.Name)
 		p := &mackerel.FindHostsParam{
 			Service: rule.Service,
 		}
@@ -93,7 +93,7 @@ func (c *Checker) Run(ctx context.Context) error {
 
 			report := &mackerel.CheckReport{
 				Source:     mackerel.NewCheckSourceHost(host.ID),
-				Name:       fmt.Sprint("IkesuChecker(", rule.Name, ")"),
+				Name:       fmt.Sprint("Ikesu Check(", rule.Name, ")"),
 				Status:     status,
 				Message:    message,
 				OccurredAt: checkedAt,
@@ -148,7 +148,7 @@ func getHostProviderType(h *mackerel.Host) string {
 	return strings.Join(pType, "-")
 }
 
-func (c *Checker) retrieveMetricsCount(ctx *context.Context, hostId, metricName string, interval int32) (int, error) {
+func (c *Check) retrieveMetricsCount(ctx *context.Context, hostId, metricName string, interval int32) (int, error) {
 	var values []mackerel.MetricValue
 	now := time.Now().Unix()
 	from := now - int64(interval)

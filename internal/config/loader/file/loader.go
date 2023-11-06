@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrNoCheckerRules   = fmt.Errorf("No checker rules defined.")
+	ErrNoCheckRules     = fmt.Errorf("No check rules defined.")
 	ErrNoSuchConfigFile = fmt.Errorf("No such config file.")
 	ErrEmptyConfigFile  = fmt.Errorf("The specified config file is empty.")
 )

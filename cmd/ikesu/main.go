@@ -35,9 +35,9 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:      "checker",
+				Name:      "check",
 				Usage:     "Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.",
-				UsageText: "ikesu checker -config <config file> [-dry-run]",
+				UsageText: "ikesu check -config <config file> [-dry-run]",
 				Action: func(ctx *cli.Context) error {
 
 					// Show the provider name and metric name, then terminate.
@@ -52,14 +52,14 @@ func main() {
 						return err
 					}
 
-					config, err := config.NewCheckerConfig(ctx.Context, ctx.String("config"))
+					config, err := config.NewCheckConfig(ctx.Context, ctx.String("config"))
 					if err != nil {
 						return err
 					}
 					if err := config.Validate(); err != nil {
 						return err
 					}
-					checker := &subcommand.Checker{
+					check := &subcommand.Check{
 						Config: config,
 						Client: mackerel.NewClient(ctx.String("mackerel-apikey")),
 						DryRun: ctx.Bool("dry-run"),
@@ -68,7 +68,7 @@ func main() {
 
 					// wrap function
 					handler := func(ctx context.Context) error {
-						return checker.Run(ctx)
+						return check.Run(ctx)
 					}
 					l.Log.Info("Run command", "version", ctx.App.Version)
 					l.Log.V(1).Info(fmt.Sprintf("config: %+v", config))
@@ -84,7 +84,7 @@ func main() {
 						Name:    "config",
 						Usage:   "Specify the path to the configuration file.",
 						Aliases: []string{"c"},
-						EnvVars: []string{"IKESU_CHECKER_CONFIG"},
+						EnvVars: []string{"IKESU_CHECK_CONFIG"},
 					},
 					&cli.BoolFlag{
 						Name:  "show-providers",

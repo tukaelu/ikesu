@@ -15,16 +15,16 @@ import (
 )
 
 var (
-	ErrNoCheckerRules   = fmt.Errorf("No checker rules defined.")
+	ErrNoCheckRules     = fmt.Errorf("No check rules defined.")
 	ErrNoSuchConfigFile = fmt.Errorf("No such config file.")
 	ErrEmptyConfigFile  = fmt.Errorf("The specified config file is empty.")
 )
 
-type CheckerConfig struct {
-	Rules []MetricCheckerRule `yaml:"checker"`
+type CheckConfig struct {
+	Rules []MetricCheckRule `yaml:"check"`
 }
 
-type MetricCheckerRule struct {
+type MetricCheckRule struct {
 	Name                string              `yaml:"name"`
 	Service             string              `yaml:"service"`
 	Roles               []string            `yaml:"roles"`
@@ -37,9 +37,9 @@ type InterruptedInterval string
 type Provider string
 
 // Validate returns the result of the validation.
-func (c *CheckerConfig) Validate() error {
+func (c *CheckConfig) Validate() error {
 	if c == nil || len(c.Rules) == 0 {
-		return ErrNoCheckerRules
+		return ErrNoCheckRules
 	}
 
 	var err error
@@ -51,13 +51,13 @@ func (c *CheckerConfig) Validate() error {
 	return err
 }
 
-func (r *MetricCheckerRule) validate() error {
+func (r *MetricCheckRule) validate() error {
 	var err error
 	if r.Name == "" {
-		err = errors.Join(err, fmt.Errorf("No name has been specified for the checker."))
+		err = errors.Join(err, fmt.Errorf("No name has been specified for the check."))
 	}
 	if r.Service == "" {
-		err = errors.Join(err, fmt.Errorf("Service not specified for checker '%s'.", r.Name))
+		err = errors.Join(err, fmt.Errorf("Service not specified for check '%s'.", r.Name))
 	}
 	err = errors.Join(err, r.InterruptedInterval.validate())
 	for _, provider := range r.Providers {
@@ -91,8 +91,8 @@ func (p Provider) validate() error {
 	return nil
 }
 
-// NewCheckerConfig returns the configuration content loaded from YAML.
-func NewCheckerConfig(ctx context.Context, confPath string) (*CheckerConfig, error) {
+// NewCheckConfig returns the configuration content loaded from YAML.
+func NewCheckConfig(ctx context.Context, confPath string) (*CheckConfig, error) {
 	u, err := url.Parse(confPath)
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func NewCheckerConfig(ctx context.Context, confPath string) (*CheckerConfig, err
 		return nil, err
 	}
 
-	conf := &CheckerConfig{}
+	conf := &CheckConfig{}
 	if err := yaml.Unmarshal(buf, conf); err != nil {
 		return nil, err
 	}
