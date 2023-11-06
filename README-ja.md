@@ -38,6 +38,33 @@ brew install tukaelu/tap/ikesu
 
 ```
 NAME:
+   ikesu - We monitor the health of the fish in the "Ikesu".
+
+USAGE:
+   ikesu [global options] command [command options] [arguments...]
+
+COMMANDS:
+   check    Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --apikey value   (default: **********) [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
+   --apibase value  (default: "https://api.mackerelio.com/") [$MACKEREL_APIBASE, $IKESU_MACKEREL_APIBASE]
+   --help, -h       show help
+   --version, -v    print the version
+```
+
+- MackerelのAPIキーの指定が必要です。いずれかの方法で指定してください。
+  - `MACKEREL_APIKEY`もしくは`IKESU_MACKEREL_APIKEY`の環境変数に指定する。
+  - `-apikey`オプションで指定する。
+- Mackerel APIのエンドポイントを変更する場合は、いずれかの方法で変更できます。
+  - `MACKEREL_APIBASE`もしくは`IKESU_MACKEREL_APIBASE`の環境変数に指定する。
+  - `-apibase`オプションで指定する。
+
+### check
+
+```
+NAME:
    ikesu check - Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.
 
 USAGE:
@@ -49,10 +76,6 @@ OPTIONS:
    --dry-run                 Only a simplified display of the check results is performed, and no alerts are issued. (default: false)
    --help, -h                show help
 ```
-
-- MackerelのAPIキーの指定が必要です。いずれかの方法で指定してください。
-  - `MACKEREL_APIKEY`もしくは`IKESU_MACKEREL_APIKEY`の環境変数に指定する。
-  - `-apikey`オプションで指定する。
 
 コマンドラインでの実行方法は次のようになります。
 
