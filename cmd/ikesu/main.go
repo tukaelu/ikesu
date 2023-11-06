@@ -65,7 +65,7 @@ func main() {
 						return err
 					}
 					client, err := mackerel.NewClientWithOptions(
-						ctx.String("mackerel-apikey"),
+						ctx.String("apikey"),
 						ctx.String("apibase"),
 						false,
 					)
