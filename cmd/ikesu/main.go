@@ -24,13 +24,18 @@ var revision string
 func main() {
 	cli := &cli.App{
 		Name:  "ikesu",
-		Usage: "We monitor the health of the fish in the \"Ikesu\".",
+		Usage: "Manage the health condition of the fish in the \"Ikesu\".",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:        "mackerel-apikey",
+				Name:        "apikey",
 				DefaultText: "**********",
 				EnvVars:     []string{"MACKEREL_APIKEY", "IKESU_MACKEREL_APIKEY"},
 				Required:    true,
+			},
+			&cli.StringFlag{
+				Name:    "apibase",
+				EnvVars: []string{"MACKEREL_APIBASE", "IKESU_MACKEREL_APIBASE"},
+				Value:   "https://api.mackerelio.com/",
 			},
 		},
 		Commands: []*cli.Command{
@@ -59,9 +64,17 @@ func main() {
 					if err := config.Validate(); err != nil {
 						return err
 					}
+					client, err := mackerel.NewClientWithOptions(
+						ctx.String("mackerel-apikey"),
+						ctx.String("apibase"),
+						false,
+					)
+					if err != nil {
+						return err
+					}
 					check := &subcommand.Check{
 						Config: config,
-						Client: mackerel.NewClient(ctx.String("mackerel-apikey")),
+						Client: client,
 						DryRun: ctx.Bool("dry-run"),
 						Logger: l,
 					}
