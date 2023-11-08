@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"slices"
 	"strings"
 	"syscall"
 
@@ -37,6 +38,18 @@ func main() {
 				EnvVars: []string{"MACKEREL_APIBASE", "IKESU_MACKEREL_APIBASE"},
 				Value:   "https://api.mackerelio.com/",
 			},
+			&cli.StringFlag{
+				Name:    "log-level",
+				EnvVars: []string{"IKESU_LOG_LEVEL"},
+				Value:   "info",
+				Action: func(ctx *cli.Context, s string) error {
+					valid := []string{"debug", "info", "warn", "error"}
+					if !slices.Contains(valid, s) {
+						return fmt.Errorf("unsupported log level '%s' has been set. It supports debug, info, warn, and error.", s)
+					}
+					return nil
+				},
+			},
 		},
 		Commands: []*cli.Command{
 			{
@@ -53,7 +66,7 @@ func main() {
 
 					var l *logger.Logger
 					var err error
-					if l, err = logger.NewDefaultLogger("info", ctx.Bool("dry-run")); err != nil {
+					if l, err = logger.NewDefaultLogger(ctx.String("log-level"), ctx.Bool("dry-run")); err != nil {
 						return err
 					}
 
@@ -84,7 +97,7 @@ func main() {
 						return check.Run(ctx)
 					}
 					l.Log.Info("Run command", "version", ctx.App.Version)
-					l.Log.V(1).Info(fmt.Sprintf("config: %+v", config))
+					l.Log.Debug("Config", "dump", fmt.Sprintf("%+v", config))
 
 					if isLambda() {
 						lambda.StartWithOptions(handler, lambda.WithContext(ctx.Context))

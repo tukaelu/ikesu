@@ -39,7 +39,7 @@ func (c *Check) Run(ctx context.Context) error {
 
 		hosts, err := c.Client.FindHosts(p)
 		if err != nil {
-			c.Log.Error(err, "Failed to retrieve the hosts.")
+			c.Log.Error("Failed to retrieve the hosts.", "reason", err.Error())
 			return err
 		}
 		c.Log.Info("Retrieved target hosts", "count", len(hosts))
@@ -75,7 +75,7 @@ func (c *Check) Run(ctx context.Context) error {
 			for _, metricName := range metricNames {
 				cnt := 0
 				if cnt, err = c.retrieveMetricsCount(&ctx, host.ID, metricName, rule.InterruptedInterval.ToValue()); err != nil {
-					c.Log.Error(err, fmt.Sprintf("Due to a failure in retrieving the metric '%s' for host '%s', it will be counted as 0 and the process will continue. ", metricName, host.ID))
+					c.Log.Error(fmt.Sprintf("Due to a failure in retrieving the metric '%s' for host '%s', it will be counted as 0 and the process will continue. ", metricName, host.ID), "reason", err.Error())
 				}
 				sum += cnt
 			}
@@ -120,7 +120,7 @@ func (c *Check) Run(ctx context.Context) error {
 			end = reportCount
 		}
 		if err := c.Client.PostCheckReports(&mackerel.CheckReports{Reports: reports[i:end]}); err != nil {
-			c.Log.Error(err, "Failed to post the check monitoring reports.", "progress", fmt.Sprintf("%d/%d", end, reportCount))
+			c.Log.Error("Failed to post the check monitoring reports.", "progress", fmt.Sprintf("%d/%d", end, reportCount), "reason", err.Error())
 			return err
 		}
 	}
@@ -165,7 +165,7 @@ func (c *Check) retrieveMetricsCount(ctx *context.Context, hostId, metricName st
 			// If 'metric not found' error is returned from the API, it will be skipped.
 			c.Log.Info("FetchHostMetricValues returns metric not found", "hostId", hostId, "metricName", metricName, "from", from, "to", to)
 		} else if err != nil {
-			c.Log.Error(err, "FetchHostMetricValues returns error", "hostId", hostId, "metricName", metricName, "from", from, "to", to)
+			c.Log.Error("FetchHostMetricValues returns error", "hostId", hostId, "metricName", metricName, "from", from, "to", to, "reason", err.Error())
 			return 0, err
 		} else {
 			values = append(values, mv...)
