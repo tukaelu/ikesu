@@ -38,7 +38,7 @@ brew install tukaelu/tap/ikesu
 
 ```
 NAME:
-   ikesu - We monitor the health of the fish in the "Ikesu".
+   ikesu - Manage the health condition of the fish in the "Ikesu".
 
 USAGE:
    ikesu [global options] command [command options] [arguments...]
@@ -48,10 +48,11 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --apikey value   (default: **********) [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
-   --apibase value  (default: "https://api.mackerelio.com/") [$MACKEREL_APIBASE, $IKESU_MACKEREL_APIBASE]
-   --help, -h       show help
-   --version, -v    print the version
+   --apikey value     (default: **********) [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
+   --apibase value    (default: "https://api.mackerelio.com/") [$MACKEREL_APIBASE, $IKESU_MACKEREL_APIBASE]
+   --log-level value  (default: "info") [$IKESU_LOG_LEVEL]
+   --help, -h         show help
+   --version, -v      print the version
 ```
 
 - MackerelのAPIキーの指定が必要です。いずれかの方法で指定してください。
