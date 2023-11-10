@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -22,7 +21,7 @@ func TestNewLogger(t *testing.T) {
 	})
 
 	t.Run("returns error when file is a directory", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
+		dir, err := os.MkdirTemp("", "ikesu")
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
