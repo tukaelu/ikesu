@@ -17,7 +17,8 @@ Mackerelで管理しているホストのメトリックの一定時間以上の
 - YAMLで指定したサービス・ロールに所属する任意のホストをチェックします。
   - Mackerelのホスト管理のプラクティスに則ることで、監視ルールの管理がとても楽になります。
   - サービス・ロールに所属するホストのうち、チェック対象を特定のプロバイダー（EC2やRDSなどの各種クラウド製品）に限定できます。
-- 一部のプロバイダーを除き、検証するメトリックが自動的に決定されます。
+- 一部のプロバイダーを除き、検証するメトリック（固定値）が自動的に決定されます。
+  - 確実性は低いです。[注意](#注意)をご確認ください。
   - もちろん任意のメトリックを追加してチェックできます。その場合は複数のメトリックのうち、いずれかが投稿されていればOKとなります。
 - 現在から過去最大30日まで遡ってチェックできます。デフォルトでは24時間以上の途絶があるとアラートが発報します。
 - 通知はCRITICALアラートのみです。WARNINGからCRITICALにアラートレベルが変わるような段階的な通知には非対応です。
@@ -51,7 +52,7 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --apikey value     (default: **********) [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
+   --apikey value      [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
    --apibase value    (default: "https://api.mackerelio.com/") [$MACKEREL_APIBASE, $IKESU_MACKEREL_APIBASE]
    --log value        Specify the path to the log file. If not specified, the log will be output to stdout.
    --log-level value  (default: "info") [$IKESU_LOG_LEVEL]
@@ -148,8 +149,9 @@ check:
 
 - 自動的にメトリックが検知対象となるかはプロバイダーに依存します。
   - メトリック名の定義にワイルドカードを含まず、常時投稿されるメトリックをもつプロバイダーが対象です。
-  - `--show-provider`オプションでプロバイダーごとの対応が確認できます。
+  - 定義されているものでも確実に投稿される保証はないので、自動的な決定に頼りすぎると誤報を招く場合もあることはご承知おきください。
   - 必要に応じて`inspection_metrics`でメトリック名を直接指定してください。
+  - `--show-provider`オプションでプロバイダーごとの対応が確認できます。
 - 次に該当する場合はチェックを行いません。
   - ホストがmackerel-agent(`provider=agent`) かつ `inspection_metrics` が定義されていない場合はチェックしません。
     - 通常であれば死活監視で検知されるからです。
