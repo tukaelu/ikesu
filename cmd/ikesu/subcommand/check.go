@@ -3,16 +3,93 @@ package subcommand
 import (
 	"context"
 	"fmt"
+	"os"
 	"slices"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mackerelio/mackerel-client-go"
+	"github.com/urfave/cli/v2"
 
 	"github.com/tukaelu/ikesu/internal/config"
 	"github.com/tukaelu/ikesu/internal/constants"
 	"github.com/tukaelu/ikesu/internal/logger"
 )
+
+// NewCheckCommand returns a command that detects disruptions in posted metrics and notifies the host as a CRITICAL alert.
+func NewCheckCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "check",
+		Usage:     "Detects disruptions in posted metrics and notifies the host as a CRITICAL alert.",
+		UsageText: "ikesu check -config <config file> [-dry-run]",
+		Action: func(ctx *cli.Context) error {
+
+			// Show the provider name and metric name, then terminate.
+			if ctx.Bool("show-providers") {
+				showProvidersInspectionMetricMap()
+				return nil
+			}
+
+			var l *logger.Logger
+			var err error
+			if l, err = logger.NewLogger(ctx.String("log"), ctx.String("log-level"), ctx.Bool("dry-run")); err != nil {
+				return err
+			}
+
+			config, err := config.NewCheckConfig(ctx.Context, ctx.String("config"))
+			if err != nil {
+				return err
+			}
+			if err := config.Validate(); err != nil {
+				return err
+			}
+			client, err := mackerel.NewClientWithOptions(
+				ctx.String("apikey"),
+				ctx.String("apibase"),
+				false,
+			)
+			if err != nil {
+				return err
+			}
+			check := &Check{
+				Config: config,
+				Client: client,
+				DryRun: ctx.Bool("dry-run"),
+				Logger: l,
+			}
+
+			// wrap function
+			handler := func(ctx context.Context) error {
+				return check.Run(ctx)
+			}
+			l.Log.Info("Run command", "version", ctx.App.Version)
+			l.Log.Debug("Config", "dump", fmt.Sprintf("%+v", config))
+
+			if isLambda() {
+				lambda.StartWithOptions(handler, lambda.WithContext(ctx.Context))
+				return nil
+			}
+			return handler(ctx.Context)
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Usage:   "Specify the path to the configuration file.",
+				Aliases: []string{"c"},
+				EnvVars: []string{"IKESU_CHECK_CONFIG"},
+			},
+			&cli.BoolFlag{
+				Name:  "show-providers",
+				Usage: "List the inspection metric names corresponding to the provider for each integration.",
+			},
+			&cli.BoolFlag{
+				Name:  "dry-run",
+				Usage: "Only a simplified display of the check results is performed, and no alerts are issued.",
+			},
+		},
+	}
+}
 
 type Check struct {
 	Config *config.CheckConfig
@@ -126,6 +203,28 @@ func (c *Check) Run(ctx context.Context) error {
 		c.Log.Debug("Posted the check monitoring reports.", "progress", fmt.Sprintf("%d/%d", end, reportCount))
 	}
 	return nil
+}
+
+// judge whether it is running on AWS Lambda.
+func isLambda() bool {
+	return os.Getenv("AWS_EXECUTION_ENV") != "" || os.Getenv("AWS_LAMBDA_RUNTIME_API") != ""
+}
+
+// Show the provider name and metric name, then terminate.
+func showProvidersInspectionMetricMap() {
+	integrations := constants.GetIntegrations()
+	providers := constants.GetProviders()
+	immap := constants.GetProvidersInspectionMetricMap()
+	for i := 0; i < len(integrations); i++ {
+		fmt.Printf("Integration: %s\n", integrations[i])
+		fmt.Println(strings.Repeat("-", 35))
+		for _, key := range providers {
+			if metric, ok := immap[integrations[i]][key]; ok {
+				fmt.Printf("provider: %-25s, metric: %s\n", key, metric)
+			}
+		}
+		fmt.Println("")
+	}
 }
 
 // see constants.providersInspectionMetricMap
