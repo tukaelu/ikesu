@@ -39,6 +39,10 @@ func main() {
 				Value:   "https://api.mackerelio.com/",
 			},
 			&cli.StringFlag{
+				Name:  "log",
+				Usage: "Specify the path to the log file. If not specified, the log will be output to stdout.",
+			},
+			&cli.StringFlag{
 				Name:    "log-level",
 				EnvVars: []string{"IKESU_LOG_LEVEL"},
 				Value:   "info",
@@ -66,7 +70,7 @@ func main() {
 
 					var l *logger.Logger
 					var err error
-					if l, err = logger.NewDefaultLogger(ctx.String("log-level"), ctx.Bool("dry-run")); err != nil {
+					if l, err = logger.NewLogger(ctx.String("log"), ctx.String("log-level"), ctx.Bool("dry-run")); err != nil {
 						return err
 					}
 

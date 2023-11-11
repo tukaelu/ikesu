@@ -50,6 +50,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --apikey value     (default: **********) [$MACKEREL_APIKEY, $IKESU_MACKEREL_APIKEY]
    --apibase value    (default: "https://api.mackerelio.com/") [$MACKEREL_APIBASE, $IKESU_MACKEREL_APIBASE]
+   --log value        Specify the path to the log file. If not specified, the log will be output to stdout.
    --log-level value  (default: "info") [$IKESU_LOG_LEVEL]
    --help, -h         show help
    --version, -v      print the version

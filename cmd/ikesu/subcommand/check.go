@@ -123,6 +123,7 @@ func (c *Check) Run(ctx context.Context) error {
 			c.Log.Error("Failed to post the check monitoring reports.", "progress", fmt.Sprintf("%d/%d", end, reportCount), "reason", err.Error())
 			return err
 		}
+		c.Log.Debug("Posted the check monitoring reports.", "progress", fmt.Sprintf("%d/%d", end, reportCount))
 	}
 	return nil
 }
