@@ -39,7 +39,8 @@ func main() {
 				Value:   "https://api.mackerelio.com/",
 			},
 			&cli.StringFlag{
-				Name: "log",
+				Name:  "log",
+				Usage: "Specify the path to the log file. If not specified, the log will be output to stdout.",
 			},
 			&cli.StringFlag{
 				Name:    "log-level",
