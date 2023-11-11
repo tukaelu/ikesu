@@ -1,6 +1,9 @@
 package constants
 
-import "sort"
+import (
+	"sort"
+	"strings"
+)
 
 const (
 	METRIC_INTERVAL_1MIN     = 60 * 60 * 20      // 20h (72,000sec)
@@ -9,71 +12,70 @@ const (
 
 // Determine the name of the metric that must be retained by the integration.
 // If a combination exists for a provider, the metric that exists in that case is also enumerated. (e.g. agent-ec2)
-// Metric names containing wildcards are not supported.
+// Metric names containing wildcards are not supported. And additionally, this definition does not ensure a guaranteed certainty.
 // FIXME: The definition of this Map is incomplete.
-// TODO: If the metric fluctuates depending on the platform's subscription plan, it may not be covered.
 var providersInspectionMetricMap = map[string]map[string]string{
 	// AWS Integrations
 	// https://mackerel.io/ja/docs/entry/integrations/aws
 	"aws": {
-		"ec2":           "custom.ec2.status_check_failed.instance",
-		"elb":           "custom.elb.host_count.healthy",
+		"ec2":           "custom.ec2.status_check_failed.instance", // There might not be a guarantee of reliable acquisition.
+		"elb":           "custom.elb.count.request_count",
 		"alb":           "custom.alb.request.count",
-		"nlb":           "custom.nlb.bytes.processed",
-		"rds":           "custom.rds.cpu.used",
-		"elasticache":   "custom.elasticache.cpu.used",
-		"redshift":      "custom.redshift.cpu.used",
-		"lambda":        "custom.lambda.count.invocations",
-		"sqs":           "",
-		"dynamodb":      "",
-		"cloudfront":    "",
-		"apigateway":    "",
-		"kinesis":       "",
-		"s3":            "",
-		"es":            "",
-		"ecs":           "",
-		"ses":           "",
-		"stepfunctions": "",
-		"efs":           "",
-		"firehose":      "",
-		"batch":         "",
-		"waf":           "",
-		"billing":       "",
-		"route53":       "",
-		"connect":       "",
-		"docdb":         "",
-		"codebuild":     "",
+		"nlb":           "custom.nlb.tcp_reset.client_count",
+		"rds":           "custom.rds.cpu.used", // There might not be a guarantee of reliable acquisition.
+		"elasticache":   "",                    // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"redshift":      "",                    // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"lambda":        "",                    // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"sqs":           "",                    // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"dynamodb":      "custom.dynamodb.requests.success_requests",
+		"cloudfront":    "custom.cloudfront.error_rate.total_error_rate",
+		"apigateway":    "custom.apigateway.requests.count",
+		"kinesis":       "", // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"s3":            "custom.s3.errors.4xx",
+		"es":            "custom.es.automated_snapshot_failure.failure",
+		"ecscluster":    "", // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"ses":           "custom.ses.email_sending_events.send",
+		"states":        "custom.states.executions.succeeded", // Step Functions
+		"efs":           "custom.efs.client_connections.count",
+		"firehose":      "custom.firehose.throttled_records.records",
+		"batch":         "", // It is not supported because there are only metric names that include wildcards.
+		"waf":           "", // It is not supported because there are only metric names that include wildcards.
+		"aws/billing":   "", // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"aws/route53":   "", // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"aws/connect":   "custom.connect.voice_calls.concurrent_calls",
+		"aws/docdb":     "", // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
+		"aws/codebuild": "custom.codebuild.builds.count",
 	},
 
 	// Azure Integrations
 	// https://mackerel.io/ja/docs/entry/integrations/azure
 	"azure": {
-		"sql_database":        "",
-		"redis_cache":         "",
-		"virtual_machine":     "",
-		"app_service":         "",
-		"functions":           "",
-		"load_balancer":       "",
-		"db_for_mysql":        "",
-		"db_for_postgresql":   "",
-		"application_gateway": "",
-		"blob_storage":        "",
-		"files":               "",
+		"sqldatabase":              "custom.azure.sql_database.connection.successful",      // There might not be a guarantee of reliable acquisition.
+		"rediscache":               "custom.azure.redis_cache.total_keys.count",            // There might not be a guarantee of reliable acquisition.
+		"azurevm":                  "custom.azure.virtual_machine.cpu.percent",             // There might not be a guarantee of reliable acquisition.
+		"appservice":               "custom.azure.app_service.requests.requests",           // There might not be a guarantee of reliable acquisition.
+		"functions":                "custom.azure.functions.requests.requests",             // There might not be a guarantee of reliable acquisition.
+		"azure/loadbalancer":       "",                                                     // It is not supported because there are only metric names that include wildcards.
+		"azure/dbformysql":         "custom.azure.db_for_mysql.connections.active",         // There might not be a guarantee of reliable acquisition.
+		"azure/dbforpostgresql":    "custom.azure.db_for_postgresql.connections.active",    // There might not be a guarantee of reliable acquisition.
+		"azure/applicationgateway": "custom.azure.application_gateway.response_status.2xx", // There might not be a guarantee of reliable acquisition.
+		"azure/blobstorage":        "",                                                     // It is not supported because there are only metric names that include wildcards.
+		"azure/files":              "custom.azure.files.file_share_count.count",            // There might not be a guarantee of reliable acquisition.
 	},
 
 	// Google Cloud Integrations
 	// https://mackerel.io/ja/docs/entry/integrations/gcp
 	"gcp": {
-		"computeengine": "",
-		"cloudsql":      "",
-		"appengine":     "",
+		"gce":           "custom.gce.instance.cpu.used",              // There might not be a guarantee of reliable acquisition.
+		"gcp/cloudsql":  "custom.cloudsql.network.connections.count", // There might not be a guarantee of reliable acquisition.
+		"gcp/appengine": "",                                          // It is not supported because i couldn't find any metrics that are guaranteed to be reliably obtained.
 	},
 
 	// Combination of cloud integration and installed agents.
 	"with-agent": {
-		"agent-ec2":           "custom.ec2.status_check_failed.instance",
-		"agent-vm":            "",
-		"agent-computeengine": "",
+		"agent-ec2":     "custom.ec2.status_check_failed.instance",  // There might not be a guarantee of reliable acquisition.
+		"agent-azurevm": "custom.azure.virtual_machine.cpu.percent", // There might not be a guarantee of reliable acquisition
+		"agent-gce":     "custom.gce.instance.cpu.used",             // There might not be a guarantee of reliable acquisition.
 		// No differences due to these patterns will occur. It is a consistent container-agent.
 		// "container-agent-ecs":        "",
 		// "container-agent-fargate":    "",
@@ -89,8 +91,9 @@ var providersInspectionMetricMap = map[string]map[string]string{
 
 // GetProviderInspectionMetricName returns the validation metric name corresponding to the provider name.
 func GetProviderInspectionMetricName(provider string) (string, bool) {
+	lcp := strings.ToLower(provider)
 	for _, integ := range providersInspectionMetricMap {
-		if metric, ok := integ[provider]; ok {
+		if metric, ok := integ[lcp]; ok {
 			if ok && metric == "" {
 				ok = false
 			}
