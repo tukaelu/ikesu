@@ -142,8 +142,8 @@ check:
     - `container-agent`
   - mackerel-agentとクラウドインテグレーションが併用される場合、プロバイダー名が次のようになります。
     - `agent-ec2` (Amazon EC2)
-    - `agent-virtualmachine` (Azure VM)
-    - `agent-computeengine` (Google Complute Engine)
+    - `agent-azurevm` (Azure VM)
+    - `agent-gce` (Google Complute Engine)
 
 ## 注意
 
