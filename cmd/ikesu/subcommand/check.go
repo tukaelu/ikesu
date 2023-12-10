@@ -167,7 +167,7 @@ func (c *Check) Run(ctx context.Context) error {
 					strings.Join(metricNames, ", "),
 				)
 			} else {
-				message = fmt.Sprintf("No disruptions were detected in the metrics.")
+				message = "No disruptions were detected in the metrics."
 			}
 
 			report := &mackerel.CheckReport{
