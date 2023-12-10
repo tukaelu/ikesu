@@ -119,7 +119,7 @@ func (c *Check) Run(ctx context.Context) error {
 			c.Log.Error("Failed to retrieve the hosts.", "reason", err.Error())
 			return err
 		}
-		c.Log.Info("Retrieved target hosts", "count", len(hosts))
+		c.Log.Info("Retrieved target hosts.", "service", rule.Service, "roles", rule.Roles, "count", len(hosts))
 
 		for _, host := range hosts {
 			provider := getHostProviderType(host)
@@ -166,11 +166,13 @@ func (c *Check) Run(ctx context.Context) error {
 					provider,
 					strings.Join(metricNames, ", "),
 				)
+			} else {
+				message = "No disruptions were detected in the metrics."
 			}
 
 			report := &mackerel.CheckReport{
 				Source:     mackerel.NewCheckSourceHost(host.ID),
-				Name:       fmt.Sprint("Ikesu Check(", rule.Name, ")"),
+				Name:       fmt.Sprint("Ikesu Check(rule=", rule.Name, ")"),
 				Status:     status,
 				Message:    message,
 				OccurredAt: checkedAt,
@@ -190,7 +192,11 @@ func (c *Check) Run(ctx context.Context) error {
 	// The Post Monitoring Check Reports API requires requests in batches of 100, so it is processed in segments.
 	// see. https://mackerel.io/api-docs/entry/check-monitoring#post
 	reportCount := len(reports)
-	c.Log.Info("Starting to report the check monitoring results.", "reports", reportCount)
+	if reportCount == 0 {
+		c.Log.Info("There were no results to report.")
+	} else {
+		c.Log.Info("Starting to report the check monitoring results.", "reports", reportCount)
+	}
 	for i := 0; i < reportCount; i += 100 {
 		end := i + 100
 		if reportCount < end {
