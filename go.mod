@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/aws/aws-lambda-go v1.41.0
 	github.com/aws/aws-sdk-go v1.48.16
-	github.com/mackerelio/mackerel-client-go v0.27.0
+	github.com/mackerelio/mackerel-client-go v0.28.0
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.26.0
 	gopkg.in/yaml.v3 v3.0.1
